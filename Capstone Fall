@@ -1,0 +1,96 @@
+import pandas as pd
+import numpy as nmp
+import matplotlib.pyplot as plt
+from scipy.stats import pearsonr
+
+data = pd.read_csv('top50.csv') #spotify 2019 top 50 data
+'''
+I had to edit some letters because they weren't
+in the correct form, so I couldn't use the link
+to the data.
+'''
+columns = [col for col in data.columns]
+for name in columns: print('\n',name) 
+
+genres = [i for i in data['Genre']]
+setofgenres = set(genres)
+
+genrecount = {}
+for genre in setofgenres:
+    count = genres.count(genre)
+    genrecount.update({str(genre): count})
+fig, ax = plt.subplots()
+ax.bar(*zip(*sorted(genrecount.items())))
+plt.xticks(rotation = 45)
+plt.rcParams["figure.figsize"] = (15,15)
+plt.annotate('Dance Pop is\nthe most common\nwith 8 out of top 50', xy=('dance pop', 8), xytext=('brostep', 7.5),
+                     arrowprops=dict(facecolor='black', shrink=0.05),)
+plt.xlabel('Genres')
+plt.ylabel('How Many in Top 50')
+plt.show()
+
+def mean(data,column):
+    '''
+    Find the mean given the column.
+    '''
+    return nmp.mean(data[column])
+
+def median(data,column):
+    '''
+    Find the median given the column.
+    '''
+    return nmp.median(data[column])    
+    
+def std(data,column):
+    '''
+    Find the standard deviation given the column.
+    '''
+    return nmp.std(data[column])
+
+def PearsonsR(data,column1,column2):
+    x = data[column1]
+    y = data[column2]
+    
+    if len(x) != len(y):
+        return 'Sets not equal'
+    
+    R,_ = pearsonr(x,y)
+    '''
+    Find the r value given two equal sets of data.
+    '''
+    return R
+
+def make_plot(data,column,type_plot):
+    '''
+        This function allows us to make different graphs
+        depending on the column we want to find the distribution
+        or trend of.
+    '''
+    if type_plot == "line":
+        plt.plot(data["Rank"], data[column])
+        plt.xlabel("Rank")
+        plt.ylabel(column)
+        z = nmp.polyfit(data["Rank"], data[column], 1)
+        y_hat = nmp.poly1d(z)(data["Rank"])
+        plt.plot(data["Rank"], y_hat, "r--", lw=1)
+        
+    elif type_plot == "bar":
+        plt.bar(data["Rank"], data[column])
+        plt.xlabel("Rank")
+        plt.ylabel(column)
+        
+    elif type_plot == "hist":
+        lst = list(data[column])
+        plt.ylabel("Amount")
+        plt.xlabel(column)
+        plt.hist(lst,histtype = "bar",edgecolor = 'blue',
+                 facecolor = 'red',alpha = 0.75)
+        plt.annotate('Mean', xy=(mean(data,column), 10),
+                     xytext=(mean(data,column) - 15, 10),
+                     arrowprops=dict(facecolor='black', 
+                                     shrink=0.05),)
+        plt.annotate('Median', xy=(median(data,column), 10),
+                     xytext=(mean(data,column) - 10, 12),
+                     arrowprops=dict(facecolor='black', 
+                                     shrink=0.05),)
+        
