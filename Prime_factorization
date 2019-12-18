@@ -1,0 +1,81 @@
+def int_fac(number,cur_prime=2):
+    
+    list_of_factors = [] 
+    #creating list for the factors
+    
+    while cur_prime <= number: 
+        #starting at 2, while we are less than original number
+        
+        while number%cur_prime == 0: 
+            '''
+            we aren't using an if statement for things like this example:
+            36%2 = 0 --> 18
+            18%3 = 0 --> 6
+            6%4 != 0
+            6%5 != 0
+            6%6 = 0 --> 1
+            and the ouput would be [2,3,6]
+            However, with a while loop, we don't immediately move to next number,
+            we instead keep dividing with the cur_prime until we can't anymore.
+            36%2 = 0 --> 18
+            18%2 = 0 --> 9
+            9%2 != 0
+            9%3 = 3 --> 3
+            3%3 = 1
+            output would be [2,2,3,3]
+            '''
+            
+            list_of_factors.append(cur_prime) 
+            #append it to our list of factors
+            
+            number /= cur_prime 
+            #then we replace the number divided by the cur prime to find the rest
+            
+        cur_prime += 1
+        #move to next number
+        
+    return list_of_factors
+
+'''
+For a larger number:
+int_fac(22998833)
+= [11, 11, 13, 14621]
+'''
+
+######################## Now for a verification function ####################
+
+def prime_q(factor):
+    
+    if factor != int(factor) or factor < 2:
+        return False
+     #if something is less than 2 or isn't an integer hop out
+        
+    elif factor == 2:
+        return True
+    #if it's 2, then it's prime.
+    
+    else:
+        for number in range(2,factor):
+            if(factor % number == 0):
+                return False
+    return True
+                #if it has a divisor it isn't prime
+
+def verify_fac(list_of_factors):
+    #caalling on prime_q recursively
+    for factor in list_of_factors:
+        if prime_q(factor):continue
+        else:return False  
+    return True
+
+'''
+Example: verify_fac([2,7,13,19,331])
+Output = True
+verify_fac([1])
+Output = False (which could be changed easily if needed)
+verify_fac([2])
+Output = True
+
+
+verify_fac([14621]): True
+'''
